@@ -1,0 +1,14 @@
+{
+  "watchFolder": "./photos",
+  "port": 8787,
+  "slideDurationMs": 7000,
+  "newPhotoDurationMs": 10000,
+  "transitionMs": 900,
+  "playback": "chronological",
+  "recursive": true,
+  "showNewPhotoBadge": true,
+  "title": "SnapBooth Live",
+  "subtitle": "Live Event Slideshow",
+  "fit": "contain",
+  "background": "#000000"
+}
