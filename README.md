@@ -6,21 +6,20 @@ A free, offline Windows slideshow for photo booth events. It watches a folder co
 
 The current app is packaged as a self-contained portable Windows EXE. End users do **not** need to install Node.js, npm, Adobe AIR, or a browser runtime.
 
-Download the latest GitHub Actions artifact named:
-
-`SnapBooth-Live-Slideshow-Portable`
-
-Inside it is a file similar to:
+For normal use, download the latest portable EXE from the repository's **Releases** page. The release asset is named like:
 
 `SnapBooth-Live-Slideshow-Portable-1.1.0.exe`
 
-Copy that EXE anywhere on the booth PC and run it.
+Copy that EXE anywhere on the booth PC and run it. Because the app is currently unsigned, Windows SmartScreen may show **Unknown publisher** the first time it is launched; for builds you trust from this repository, choose **Run anyway**.
+
+GitHub Actions artifacts are also available from successful build runs and are mainly useful for testing development builds before a release.
 
 ## Features
 
 - Watches a Windows folder in real time
 - Shows newly created photos immediately
 - Returns to normal slideshow playback afterward
+- No on-screen "NEW PHOTO" banner
 - Portable single-file Windows EXE
 - No separate Node.js install for end users
 - Completely offline while running
@@ -44,7 +43,7 @@ Copy that EXE anywhere on the booth PC and run it.
 5. Set normal photo duration and new-photo duration.
 6. Click **Start Slideshow**.
 
-When dslrBooth writes a new supported image into the watched folder, the app waits until the file has finished writing, then displays it immediately.
+When dslrBooth writes a new supported image into the watched folder, the app waits until the file has finished writing, then displays it immediately. After the configured new-photo display time, normal slideshow rotation resumes.
 
 ## Building the portable EXE
 
@@ -57,7 +56,15 @@ npm run build:portable
 
 The finished EXE appears under `dist/`.
 
-A GitHub Actions workflow also builds the Windows portable EXE automatically whenever the Electron app source changes on `main`.
+GitHub Actions automatically builds the Windows portable EXE whenever the Electron app source changes on `main`.
+
+## Publishing a release
+
+The repository includes a release workflow. After bumping the version in `package.json`, push a commit to `main` whose commit message contains:
+
+`[release]`
+
+The workflow builds the portable EXE, creates the matching `vX.Y.Z` tag, creates a GitHub Release, and attaches the EXE as a permanent release download.
 
 ## Source layout
 
@@ -66,5 +73,6 @@ A GitHub Actions workflow also builds the Windows portable EXE automatically whe
 - `ui/settings.html` — graphical settings screen
 - `ui/slideshow.html` — slideshow screen
 - `.github/workflows/build-portable.yml` — automatic Windows portable build
+- `.github/workflows/release-portable.yml` — permanent GitHub Release publishing
 
 The older browser/server prototype files remain in the repository for reference but are no longer used by the portable application.
