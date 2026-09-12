@@ -2,78 +2,69 @@
 
 A free, offline Windows slideshow for photo booth events. It watches a folder continuously, detects new photos, displays each new photo immediately, then returns to the normal slideshow rotation.
 
+## Portable Windows app
+
+The current app is packaged as a self-contained portable Windows EXE. End users do **not** need to install Node.js, npm, Adobe AIR, or a browser runtime.
+
+Download the latest GitHub Actions artifact named:
+
+`SnapBooth-Live-Slideshow-Portable`
+
+Inside it is a file similar to:
+
+`SnapBooth-Live-Slideshow-Portable-1.1.0.exe`
+
+Copy that EXE anywhere on the booth PC and run it.
+
 ## Features
 
 - Watches a Windows folder in real time
-- Shows new photos immediately
-- Fullscreen browser display
-- Works well on a second monitor, TV, or projector
-- Chronological or shuffle playback
-- Adjustable slide duration, new-photo duration, and fade time
+- Shows newly created photos immediately
+- Returns to normal slideshow playback afterward
+- Portable single-file Windows EXE
+- No separate Node.js install for end users
+- Completely offline while running
+- Fullscreen mode
+- Selectable display / second-monitor support
+- Chronological or random playback
+- Adjustable normal slide duration
+- Adjustable new-photo display duration
+- Watch subfolders option
+- Event title and subtitle overlay
 - JPG, JPEG, PNG, GIF, and WebP support
-- Recursive folder watching
-- Event title/subtitle overlay
-- Runs completely offline after initial setup
+- ESC returns to Settings
 - No Adobe AIR and no subscription
 
-## Windows setup
+## Using it with dslrBooth
 
-1. Install the current **Node.js LTS** from https://nodejs.org/ if it is not already installed.
-2. Download or clone this repository.
-3. Open `config.json` and set `watchFolder` to your dslrBooth output folder. Example:
+1. Run `SnapBooth-Live-Slideshow-Portable-1.1.0.exe`.
+2. Click **Browse** beside Photo Folder.
+3. Select the dslrBooth event/output folder containing the images you want shown.
+4. Choose the monitor/TV/projector under Display.
+5. Set normal photo duration and new-photo duration.
+6. Click **Start Slideshow**.
 
-```json
-"watchFolder": "C:\\Users\\Billy\\Pictures\\dslrBooth\\My Event"
+When dslrBooth writes a new supported image into the watched folder, the app waits until the file has finished writing, then displays it immediately.
+
+## Building the portable EXE
+
+Developers can build locally with Node.js:
+
+```powershell
+npm install
+npm run build:portable
 ```
 
-4. Double-click `start.bat`.
-5. On the first run, required packages are installed automatically.
-6. The slideshow opens at `http://127.0.0.1:8787`.
-7. Move the browser to your second screen and press **F** or click **Fullscreen**.
+The finished EXE appears under `dist/`.
 
-## dslrBooth workflow
+A GitHub Actions workflow also builds the Windows portable EXE automatically whenever the Electron app source changes on `main`.
 
-Point `watchFolder` at the folder where dslrBooth saves the finished photos you want displayed. When a new supported image is written there, SnapBooth Live detects it after the file finishes writing and puts it on screen immediately.
+## Source layout
 
-## Configuration
+- `electron/main.js` — Windows app, folder watcher, settings, display control
+- `electron/preload.js` — secure renderer bridge
+- `ui/settings.html` — graphical settings screen
+- `ui/slideshow.html` — slideshow screen
+- `.github/workflows/build-portable.yml` — automatic Windows portable build
 
-Edit `config.json` before starting the app:
-
-```json
-{
-  "watchFolder": "./photos",
-  "port": 8787,
-  "slideDurationMs": 7000,
-  "newPhotoDurationMs": 10000,
-  "transitionMs": 900,
-  "playback": "chronological",
-  "recursive": true,
-  "showNewPhotoBadge": true,
-  "title": "SnapBooth Live",
-  "subtitle": "Live Event Slideshow",
-  "fit": "contain",
-  "background": "#000000"
-}
-```
-
-`playback` can be `chronological` or `shuffle`.
-
-`fit` can be `contain` to show the whole photo or `cover` to fill the screen and crop edges.
-
-## Keyboard shortcuts
-
-- **F** - fullscreen
-- **Right Arrow** - next photo
-- **Space** - pause/resume
-
-## Default photo folder
-
-If you leave `watchFolder` as `./photos`, the app automatically creates a `photos` folder beside `server.js`. Drop images into it to test the slideshow.
-
-## Stop the app
-
-Close the slideshow browser and press **Ctrl+C** in the SnapBooth Live console window.
-
-## License
-
-This project is intended as a simple event-display utility. Add a license file before redistributing it publicly if you want to establish explicit reuse terms.
+The older browser/server prototype files remain in the repository for reference but are no longer used by the portable application.
