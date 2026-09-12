@@ -1,15 +1,31 @@
 {
   "name": "snapbooth-live-slideshow",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Offline Windows live slideshow that watches a folder and shows new photos immediately.",
-  "main": "server.js",
+  "description": "Portable Windows live slideshow that watches a folder and shows new photos immediately.",
+  "main": "electron/main.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "electron .",
+    "build:portable": "electron-builder --win portable"
   },
   "dependencies": {
-    "chokidar": "^4.0.3",
-    "express": "^5.1.0",
-    "ws": "^8.18.3"
+    "chokidar": "^4.0.3"
+  },
+  "devDependencies": {
+    "electron": "^38.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "ca.snapbooth.liveslideshow",
+    "productName": "SnapBooth Live Slideshow",
+    "files": [
+      "electron/**/*",
+      "ui/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["portable"],
+      "artifactName": "SnapBooth-Live-Slideshow-Portable-${version}.exe"
+    }
   }
 }
