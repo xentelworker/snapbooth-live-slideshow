@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SnapBooth Live Slideshow</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>SnapBooth Live Slideshow</h1>
+      <p>Portable Windows slideshow with live folder watching.</p>
+    </header>
+
+    <section class="card">
+      <label>Photo folder</label>
+      <div class="row">
+        <input id="watchFolder" type="text" placeholder="Choose your dslrBooth event folder">
+        <button id="browse">Browse</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Display</label>
+          <select id="displayIndex"></select>
+        </div>
+        <div>
+          <label>Photo duration (seconds)</label>
+          <input id="durationSeconds" type="number" min="1" max="120" value="7">
+        </div>
+        <div>
+          <label>New photo duration (seconds)</label>
+          <input id="newPhotoSeconds" type="number" min="1" max="120" value="10">
+        </div>
+        <div>
+          <label>Playback</label>
+          <select id="shuffle">
+            <option value="false">Chronological</option>
+            <option value="true">Random</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checks">
+        <label><input id="watchSubfolders" type="checkbox" checked> Watch subfolders</label>
+        <label><input id="fullscreen" type="checkbox" checked> Start fullscreen</label>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Event title (optional)</label>
+          <input id="eventTitle" type="text" placeholder="Shalini & Justin">
+        </div>
+        <div>
+          <label>Subtitle (optional)</label>
+          <input id="eventSubtitle" type="text" placeholder="June 14, 2026">
+        </div>
+      </div>
+
+      <div id="status" class="status"></div>
+      <div class="actions">
+        <button id="save" class="secondary">Save</button>
+        <button id="start" class="primary">Start Slideshow</button>
+      </div>
+    </section>
+  </main>
+  <script src="settings.js"></script>
+</body>
+</html>
