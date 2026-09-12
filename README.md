@@ -34,7 +34,7 @@ GitHub Actions artifacts are also available from successful build runs and are m
 - ESC returns to Settings
 - No Adobe AIR and no subscription
 
-## Using it with dslrBooth
+## Using it with dslrBooth or LumaBooth for Windows
 
 1. Run `SnapBooth-Live-Slideshow-Portable-1.1.0.exe`.
 2. Click **Browse** beside Photo Folder.
