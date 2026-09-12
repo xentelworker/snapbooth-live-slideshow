@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnapBooth Live Slideshow</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="emptyState" class="empty-state">
+      <div class="empty-card">
+        <h1 id="title">SnapBooth Live</h1>
+        <p id="subtitle">Live Event Slideshow</p>
+        <p class="hint">Waiting for photos...</p>
+      </div>
+    </div>
+
+    <div id="stage" class="stage hidden" aria-live="polite">
+      <img id="photoA" class="photo active" alt="Live event photo" />
+      <img id="photoB" class="photo" alt="Live event photo" />
+      <div id="badge" class="new-badge hidden">NEW PHOTO</div>
+      <div class="brand-overlay">
+        <div id="overlayTitle" class="overlay-title"></div>
+        <div id="overlaySubtitle" class="overlay-subtitle"></div>
+      </div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button id="fullscreenBtn">Fullscreen</button>
+      <button id="nextBtn">Next</button>
+      <button id="pauseBtn">Pause</button>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
