@@ -5,7 +5,6 @@ let index = -1;
 let timer;
 let currentEl = $('photoA');
 let nextEl = $('photoB');
-let interrupting = false;
 
 function shuffledIndex(){
   if (photos.length < 2) return 0;
@@ -14,7 +13,7 @@ function shuffledIndex(){
   return n;
 }
 
-function show(photo, isNew=false){
+function show(photo){
   if (!photo) return;
   $('empty').style.display = 'none';
   nextEl.onload = () => {
@@ -23,7 +22,6 @@ function show(photo, isNew=false){
     [currentEl, nextEl] = [nextEl, currentEl];
   };
   nextEl.src = photo.url + `?t=${photo.mtimeMs || Date.now()}`;
-  $('badge').classList.toggle('show', isNew);
 }
 
 function scheduleNormal(){
@@ -31,7 +29,7 @@ function scheduleNormal(){
   timer = setTimeout(() => {
     if (!photos.length) return scheduleNormal();
     index = settings.shuffle ? shuffledIndex() : (index + 1) % photos.length;
-    show(photos[index], false);
+    show(photos[index]);
     scheduleNormal();
   }, Math.max(1, settings.durationSeconds) * 1000);
 }
@@ -52,12 +50,9 @@ async function init(){
   window.snapbooth.onPhotoAdded(photo => {
     photos.push(photo);
     photos.sort((a,b) => a.mtimeMs - b.mtimeMs);
-    interrupting = true;
     clearTimeout(timer);
-    show(photo, true);
+    show(photo);
     timer = setTimeout(() => {
-      $('badge').classList.remove('show');
-      interrupting = false;
       scheduleNormal();
     }, Math.max(1, settings.newPhotoSeconds) * 1000);
   });
