@@ -1,0 +1,15 @@
+{
+  "name": "snapbooth-live-slideshow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline Windows live slideshow that watches a folder and shows new photos immediately.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "express": "^5.1.0",
+    "ws": "^8.18.3"
+  }
+}
