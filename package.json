@@ -1,8 +1,8 @@
 {
   "name": "snapbooth-live-slideshow",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "Portable Windows live slideshow that watches a folder and shows new photos immediately.",
+  "description": "Portable Windows live slideshow for photos and 360 booth videos with portrait/landscape filtering.",
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
@@ -24,7 +24,9 @@
       "package.json"
     ],
     "win": {
-      "target": ["portable"],
+      "target": [
+        "portable"
+      ],
       "artifactName": "SnapBooth-Live-Slideshow-Portable-${version}.exe"
     }
   }
