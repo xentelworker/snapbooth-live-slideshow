@@ -15,27 +15,25 @@ let settings = {
   fullscreen: true,
   displayIndex: 0,
   eventTitle: '',
-  eventSubtitle: ''
+  eventSubtitle: '',
+  videoOrientation: 'all'
 };
 
-const supported = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp']);
+const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp']);
+const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v']);
+const supported = new Set([...imageExtensions, ...videoExtensions]);
 
-function settingsPath() {
-  return path.join(app.getPath('userData'), 'settings.json');
+function mediaType(file) {
+  return videoExtensions.has(path.extname(file).toLowerCase()) ? 'video' : 'image';
 }
 
-function loadSettings() {
-  try {
-    settings = { ...settings, ...JSON.parse(fs.readFileSync(settingsPath(), 'utf8')) };
-  } catch (_) {}
-}
-
+function settingsPath() { return path.join(app.getPath('userData'), 'settings.json'); }
+function loadSettings() { try { settings = { ...settings, ...JSON.parse(fs.readFileSync(settingsPath(), 'utf8')) }; } catch (_) {} }
 function saveSettings(next) {
   settings = { ...settings, ...next };
   fs.mkdirSync(path.dirname(settingsPath()), { recursive: true });
   fs.writeFileSync(settingsPath(), JSON.stringify(settings, null, 2));
 }
-
 function walk(dir, recursive = true) {
   if (!dir || !fs.existsSync(dir)) return [];
   const out = [];
@@ -44,44 +42,32 @@ function walk(dir, recursive = true) {
     if (entry.isDirectory() && recursive) out.push(...walk(full, recursive));
     else if (entry.isFile() && supported.has(path.extname(entry.name).toLowerCase())) {
       const st = fs.statSync(full);
-      out.push({ path: full, url: pathToFileURL(full).href, mtimeMs: st.mtimeMs, name: entry.name });
+      out.push({ path: full, url: pathToFileURL(full).href, mtimeMs: st.mtimeMs, name: entry.name, type: mediaType(full) });
     }
   }
   return out.sort((a, b) => a.mtimeMs - b.mtimeMs);
 }
-
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 980,
-    height: 700,
-    minWidth: 760,
-    minHeight: 560,
-    backgroundColor: '#111111',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      webSecurity: false
-    }
+    width: 980, height: 700, minWidth: 760, minHeight: 560, backgroundColor: '#111111',
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, webSecurity: false }
   });
   mainWindow.loadFile(path.join(__dirname, '..', 'ui', 'settings.html'));
 }
-
 function startWatcher() {
   if (watcher) watcher.close();
   if (!settings.watchFolder || !fs.existsSync(settings.watchFolder)) return;
   watcher = chokidar.watch(settings.watchFolder, {
     ignoreInitial: true,
     depth: settings.watchSubfolders ? undefined : 0,
-    awaitWriteFinish: { stabilityThreshold: 700, pollInterval: 100 }
+    awaitWriteFinish: { stabilityThreshold: 1500, pollInterval: 200 }
   });
   watcher.on('add', file => {
     if (!supported.has(path.extname(file).toLowerCase())) return;
-    const payload = { path: file, url: pathToFileURL(file).href, name: path.basename(file), mtimeMs: Date.now() };
-    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('photo-added', payload);
+    const payload = { path: file, url: pathToFileURL(file).href, name: path.basename(file), mtimeMs: Date.now(), type: mediaType(file) };
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('media-added', payload);
   });
 }
-
 ipcMain.handle('get-settings', () => settings);
 ipcMain.handle('choose-folder', async () => {
   const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] });
@@ -89,10 +75,9 @@ ipcMain.handle('choose-folder', async () => {
 });
 ipcMain.handle('get-displays', () => screen.getAllDisplays().map((d, i) => ({ index: i, label: d.label || `Display ${i + 1}`, bounds: d.bounds, primary: d.id === screen.getPrimaryDisplay().id })));
 ipcMain.handle('save-settings', (_e, next) => { saveSettings(next); startWatcher(); return settings; });
-ipcMain.handle('list-photos', () => walk(settings.watchFolder, settings.watchSubfolders));
+ipcMain.handle('list-media', () => walk(settings.watchFolder, settings.watchSubfolders));
 ipcMain.handle('open-slideshow', async (_e, next) => {
-  saveSettings(next);
-  startWatcher();
+  saveSettings(next); startWatcher();
   const displays = screen.getAllDisplays();
   const display = displays[Math.max(0, Math.min(settings.displayIndex || 0, displays.length - 1))] || screen.getPrimaryDisplay();
   mainWindow.setBounds(display.bounds);
@@ -105,11 +90,8 @@ ipcMain.handle('exit-slideshow', () => {
   mainWindow.setFullScreen(false);
   mainWindow.loadFile(path.join(__dirname, '..', 'ui', 'settings.html'));
 });
-
 app.whenReady().then(() => {
-  loadSettings();
-  createWindow();
-  startWatcher();
+  loadSettings(); createWindow(); startWatcher();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
